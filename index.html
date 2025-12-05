@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siply App Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Using Inter for body/headings (similar to Cerebri) and Poppins for subheadings (similar to Balgin) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Siply Branding Colors */
+        :root {
+            --color-primary: #8BC1D0; /* Main accent color */
+            --color-secondary: #9EBAC2; /* Secondary accent color */
+            --color-light: #BAE0EB; /* Light background accent */
+            --color-white: #FFFFFF;
+            --color-text-dark: #2c3e50; /* Dark text for contrast */
+        }
+
+        /* Applying Custom Fonts and Brand Colors */
+        body {
+            font-family: 'Inter', sans-serif; /* Cerebri equivalent */
+            background-color: var(--color-light); /* Light blue background */
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            color: var(--color-text-dark);
+        }
+        h4, .font-subheading {
+            font-family: 'Poppins', sans-serif; /* Balgin equivalent */
+            font-weight: 600;
+        }
+
+        /* Custom styles for the hydration progress ring */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Chart Bar styling */
+        .chart-bar {
+            width: 100%;
+            border-radius: 9999px;
+            background-color: var(--color-light);
+            position: relative;
+        }
+        .chart-bar-fill {
+            height: 100%;
+            border-radius: 9999px;
+            background-color: var(--color-primary);
+            transition: height 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased flex flex-col items-center p-0">
+
+    <div id="app-container" class="w-full max-w-md bg-white shadow-xl rounded-b-3xl">
+
+        <!-- Top Navigation Bar -->
+        <header class="p-4 flex justify-between items-center border-b border-gray-100">
+            <!-- Siply Logo (NOW USING ./files/ FOR GITHUB COMPATIBILITY) -->
+            <img src="./files/Screenshot_2025-12-04_at_10.00.08_PM-removebg-preview.png" alt="Siply Logo" class="h-8 w-auto" onerror="this.onerror=null; this.src='https://placehold.co/100x32/8BC1D0/FFFFFF?text=Siply+Logo';" />
+            <div class="flex items-center space-x-3">
+                <button class="text-gray-500 hover:text-[var(--color-primary)] transition duration-150">
+                    <!-- Icon for Weather/Sync -->
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </button>
+                <button class="p-1 rounded-full bg-[var(--color-primary)] text-white">
+                    <!-- Profile Icon -->
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboard-view">
+            <!-- Main Hydration Dashboard (1, 7) -->
+            <div class="p-6 text-center bg-[var(--color-light)]">
+                <h2 class="text-sm font-subheading text-gray-700 uppercase tracking-widest mb-2">Today's Hydration Goal</h2>
+                
+                <div class="relative inline-block mx-auto" style="width: 200px; height: 200px;">
+                    <!-- SVG for the Progress Ring -->
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <!-- Background Circle -->
+                        <circle class="text-[var(--color-secondary)] opacity-30" stroke="currentColor" stroke-width="10" fill="transparent" r="45" cx="50" cy="50"></circle>
+                        <!-- Progress Circle (Initial 65% mock progress) -->
+                        <circle 
+                            id="hydration-progress"
+                            class="progress-ring__circle text-[var(--color-primary)]" 
+                            stroke="currentColor" 
+                            stroke-width="10" 
+                            fill="transparent" 
+                            r="45" 
+                            cx="50" 
+                            cy="50"
+                            style="stroke-dasharray: 282.7; stroke-dashoffset: 98.945;">
+                        </circle>
+                    </svg>
+
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <p id="hydration-percent" class="text-5xl font-heading text-[var(--color-primary)]">65%</p>
+                        <p class="text-lg font-medium text-gray-700">1300 / 2000 ml</p>
+                        <p class="text-xs text-gray-500 mt-1 flex items-center">
+                            <svg class="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            Last Sip: 5 min ago
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bottle Connectivity Status (7) -->
+                <div class="mt-4 flex justify-center items-center space-x-4 text-sm text-gray-600">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 10a.5.5 0 01.5-.5h4a.5.5 0 010 1H6a.5.5 0 01-.5-.5zM15.354 8.646a.5.5 0 00-.708 0l-3 3a.5.5 0 00.708.708L12 11.207l2.646 2.647a.5.5 0 00.708-.708l-3-3a.5.5 0 000-.708zM10 18a8 8 0 100-16 8 8 0 000 16z"></path></svg>
+                        <span>Bottle Connected</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M15 4h-.057l-1.4-2.8a1 1 1 00-.894-.555H8.351a1 1 0 00-.894.555L6.057 4H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2zM8 4h4l.8 1.6H7.2L8 4zm5 12H7v-8h6v8z" clip-rule="evenodd"></path></svg>
+                        <span>90% Battery</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insights & Action Section -->
+            <div class="p-6 space-y-4 bg-white rounded-t-2xl">
+                <h3 class="text-xl font-heading text-gray-800">Siply Insights</h3>
+
+                <!-- Nutrient Timing Alert (3) -->
+                <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-xl shadow-sm flex items-center space-x-4">
+                    <svg class="w-8 h-8 text-yellow-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.5-1.667 1.732-3L13.732 4c-.77-.998-2.348-.998-3.118 0L3.938 16c-.768 1.333.172 3 1.732 3z"></path></svg>
+                    <div>
+                        <p class="font-subheading text-yellow-800">Electrolyte Boost Recommended</p>
+                        <p class="text-sm text-yellow-700">You've been highly active. Replenish Sodium & Potassium now for optimal recovery.</p>
+                    </div>
+                    <button class="flex-shrink-0 text-yellow-600 font-semibold text-sm">Mix Now</button>
+                </div>
+
+                <!-- Performance Analytics (4) -->
+                <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                    <h4 class="font-subheading text-lg mb-2 text-gray-800">Performance Check-In</h4>
+                    <p class="text-sm text-gray-500 mb-4">How is your Focus/Energy today? (Tap to log)</p>
+                    
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg cursor-pointer hover:bg-gray-100 transition duration-150">
+                        <span class="text-gray-700 font-medium">Focus Score:</span>
+                        <span class="text-green-600 font-bold text-lg">8.5 / 10</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-gray-50 p-3 mt-2 rounded-lg cursor-pointer hover:bg-gray-100 transition duration-150">
+                        <span class="text-gray-700 font-medium">Energy Level:</span>
+                        <span class="blue-600 font-bold text-lg">7 / 10</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">Correlated with hydration data and activity sync (6).</p>
+                </div>
+                
+                <!-- Micro-Habit Nudge (2) -->
+                <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                    <h4 class="font-subheading text-lg mb-2 text-gray-800">Routine Builder</h4>
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-6 h-6 text-[var(--color-secondary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div>
+                            <p class="text-sm text-gray-700">Adaptive Nudge: Drink 200ml by 11:30 AM to hit your optimal zone.</p>
+                            <p class="text-xs text-gray-400">Your hydration is dipping post-activity spike.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS VIEW (Hidden by default) -->
+        <div id="analytics-view" class="p-6 space-y-6 hidden">
+            <h2 class="text-2xl font-heading text-gray-800">Weekly Performance Report</h2>
+            
+            <!-- Weekly Hydration Trend (4, 9) -->
+            <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                <h3 class="font-subheading text-xl mb-3 text-gray-800 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 6-6M9 10V4.5a2.5 2.5 0 015 0V10m0 0l-3 3m3-3l-3 3"></path></svg>
+                    Hydration Consistency
+                </h3>
+                <p class="text-sm text-gray-500 mb-4">Your average daily goal attainment this week was <span class="font-bold text-green-600">92%</span>. Great job!</p>
+                
+                <!-- Mock Bar Chart -->
+                <div class="flex justify-between items-end h-32 pt-4 space-x-2">
+                    <!-- Data for 7 days (Mon-Sun) -->
+                    <div class="flex flex-col items-center w-full h-full">
+                        <div class="chart-bar h-full">
+                            <div class="chart-bar-fill" style="height: 95%;"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 mt-1">Mon</span>
+                    </div>
+                    <div class="flex flex-col items-center w-full h-full">
+                        <div class="chart-bar h-full">
+                            <div class="chart-bar-fill" style="height: 100%;"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 mt-1">Tue</span>
+                    </div>
+                    <div class="flex flex-col items-center w-full h-full">
+                        <div class="chart-bar h-full">
+                            <div class="chart-bar-fill" style="height: 85%;"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 mt-1">Wed</span>
+                    </div>
+                    <div class="flex flex-col items-center w-full h-full">
+                        <div class="chart-bar h-full">
+                            <div class="chart-bar-fill" style="height: 90%;"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 mt-1">Thu</span>
+                    </div>
+                    <div class="flex flex-col items-center w-full h-full">
+                        <div class="chart-bar h-full">
+                            <div class="chart-bar-fill" style="height: 75%;"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 mt-1">Fri</span>
+                    </div>
+                    <div class="flex flex-col items-center w-full h-full">
+                        <div class="chart-bar h-full">
+                            <div class="chart-bar-fill" style="height: 100%;"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 mt-1">Sat</span>
+                    </div>
+                    <div class="flex flex-col items-center w-full h-full">
+                        <div class="chart-bar h-full">
+                            <div class="chart-bar-fill" style="height: 98%;"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 mt-1">Sun</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Correlation (4) -->
+            <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                <h3 class="font-subheading text-xl mb-3 text-gray-800 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Focus & Energy Impact
+                </h3>
+                <p class="text-sm text-gray-500 mb-4">When hydration is over 90%, your Focus Score increases by 1.1 points.</p>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center text-gray-700">
+                        <span>Avg. Focus Score (90%+ Hydration):</span>
+                        <span class="font-bold text-lg text-green-600">8.8</span>
+                    </div>
+                    <div class="flex justify-between items-center text-gray-700">
+                        <span>Avg. Focus Score (Below 90% Hydration):</span>
+                        <span class="font-bold text-lg text-red-500">7.7</span>
+                    </div>
+                </div>
+
+                <p class="text-xs text-gray-400 mt-4">Personalized Recommendation: Try Front-loading 50% of your water intake before 1 PM for better afternoon focus.</p>
+            </div>
+
+            <!-- Nutrient Intake Summary (3, 9) -->
+            <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                <h3 class="font-subheading text-xl mb-3 text-gray-800 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.21a.997.997 0 00-.592-.592 10 10 0 10-14.836 0c.264.44.47 1.05.592 1.57.123.518.23 1.07.284 1.636.053.566.075 1.13.075 1.666 0 1.95.836 3.75 2.155 5.011l.334.305a7 7 0 00.957.77l.512.448c.15.132.327.247.525.334a1 1 0 00.732 0l.525-.334c.198-.087.375-.202.525-.334l.334-.305C14.164 16.5 15 14.7 15 12c0-.536.022-1.1.075-1.666.054-.566.161-1.118.284-1.636.122-.52.328-1.13.592-1.57z"></path></svg>
+                    Nutrient Intake (Last 7 Days)
+                </h3>
+                <ul class="space-y-2 text-sm">
+                    <!-- Flavor names -->
+                    <li class="flex justify-between items-center border-b pb-1">
+                        <span class="text-gray-700">Orange Mango (AM):</span>
+                        <span class="font-semibold text-gray-800">7 / 7 Days</span>
+                    </li>
+                    <li class="flex justify-between items-center border-b pb-1">
+                        <span class="text-gray-700">Apple Pomegranate (Post-Workout):</span>
+                        <span class="font-semibold text-gray-800">4 / 7 Days</span>
+                    </li>
+                    <li class="flex justify-between items-center">
+                        <span class="text-gray-700">Potassium Target Hit:</span>
+                        <span class="font-semibold text-gray-800 text-green-600">6 / 7 Days</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+        
+        <!-- COMMUNITY VIEW (Hidden by default) -->
+        <div id="community-view" class="p-6 space-y-6 hidden">
+            <h2 class="text-2xl font-heading text-gray-800">Community & Rewards</h2>
+
+            <!-- Hydration Points and Rewards (New Feature) -->
+            <div class="bg-[var(--color-secondary)] p-5 rounded-xl shadow-lg text-white">
+                <div class="flex justify-between items-center mb-3">
+                    <p class="text-sm font-subheading">YOUR BALANCE</p>
+                    <button class="text-xs font-semibold px-3 py-1 bg-white text-[var(--color-secondary)] rounded-full hover:bg-gray-100 transition">Claim Rewards</button>
+                </div>
+                <h3 class="text-4xl font-extrabold mb-1 flex items-center">
+                    12,500
+                    <svg class="w-8 h-8 ml-2 text-yellow-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 12l-2 5 2-2 2 2-2-5zm0-10a8 8 0 100 16 8 8 0 000-16zM5.5 10a.5.5 0 01.5-.5h8a.5.5 0 010 1h-8a.5.5 0 01-.5-.5z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
+                </h3>
+                <p class="text-sm text-gray-200">Hydration Points (Earned 3,200 this week)</p>
+            </div>
+
+            <!-- Current Challenge Card (8) -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-5 rounded-xl shadow-lg text-white">
+                <p class="text-sm font-semibold mb-1">CURRENT CHALLENGE</p>
+                <h3 class="text-xl font-subheading mb-3">7-Day Hydration Streak</h3>
+                <div class="flex justify-between items-center text-sm font-medium">
+                    <span>Your Streak: 5 Days</span>
+                    <span>Goal: 7 Days</span>
+                </div>
+                <!-- Progress Bar -->
+                <div class="w-full bg-blue-400 h-2 rounded-full mt-2">
+                    <div class="bg-white h-2 rounded-full" style="width: 71%;"></div>
+                </div>
+                <button class="mt-4 w-full bg-white text-indigo-600 font-bold py-2 rounded-lg hover:bg-gray-100 transition">View Details</button>
+            </div>
+
+            <!-- Leaderboard (Updated to Liv K.) -->
+            <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                <h4 class="font-subheading text-xl mb-3 text-gray-800 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-7-9a.5.5 0 01.5-.5h13a.5.5 0 010 1h-13a.5.5 0 01-.5-.5z" clip-rule="evenodd"></path></svg>
+                    Weekly Leaderboard (Points)
+                </h4>
+                <ul class="space-y-3">
+                    <li class="flex justify-between items-center">
+                        <span class="font-bold text-lg text-yellow-600">#1</span>
+                        <span class="flex-1 ml-4 font-medium text-gray-800">Liv K. (You)</span>
+                        <span class="text-sm font-bold text-gray-800">3,200 pts</span>
+                    </li>
+                    <li class="flex justify-between items-center">
+                        <span class="font-bold text-lg text-gray-400">#2</span>
+                        <span class="flex-1 ml-4 text-gray-700">Isaac H.</span>
+                        <span class="text-sm font-medium text-gray-500">2,950 pts</span>
+                    </li>
+                    <li class="flex justify-between items-center">
+                        <span class="font-bold text-lg text-yellow-800">#3</span>
+                        <span class="flex-1 ml-4 text-gray-700">Sacha P.</span>
+                        <span class="text-sm font-medium text-gray-500">2,800 pts</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Encouragement System (8) -->
+            <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100 text-center">
+                <h4 class="font-subheading text-lg mb-2 text-gray-800">Send an Encouragement!</h4>
+                <p class="text-sm text-gray-500 mb-3">Motivate your friends to stay on track.</p>
+                <button class="w-full bg-green-500 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition">Send Sip-Five! 🖐️</button>
+            </div>
+        </div>
+
+        <!-- SHOP VIEW (Hidden by default) -->
+        <div id="shop-view" class="p-6 space-y-6 hidden">
+            <h2 class="text-2xl font-heading text-gray-800">Marketplace & Subscription</h2>
+
+            <!-- Auto-Replenish/Subscription Status (10, 2) -->
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+                <h3 class="font-subheading text-xl text-gray-800 mb-2 flex justify-between items-center">
+                    Auto-Replenish Status
+                    <span class="text-green-600 text-sm font-semibold">Active</span>
+                </h3>
+                <div class="space-y-2 text-sm text-gray-700">
+                    <p>Next Shipment: <span class="font-medium">December 10th</span></p>
+                    <p>Items: <span class="font-medium">Orange Mango, Apple Pomegranate</span></p>
+                    <p class="text-xs text-gray-500">Usage Rate: Based on 95% weekly consumption rate.</p>
+                </div>
+                <button class="mt-4 w-full border border-gray-300 text-gray-800 font-semibold py-2 rounded-lg hover:bg-gray-100 transition">Modify / Skip Shipment</button>
+            </div>
+
+            <!-- TrackSiply+ Membership Benefits (10, 1, 3) -->
+            <div class="bg-[var(--color-text-dark)] p-5 rounded-xl shadow-lg text-white">
+                <h3 class="font-heading text-xl mb-1 flex items-center text-white">
+                    TrackSiply Premium
+                    <svg class="w-6 h-6 ml-2 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.631-.921 1.932 0l1.248 3.84a1 1 0 00.95.69h4.041c.97 0 1.366 1.258.588 1.81l-3.262 2.375a1 1 0 00-.364 1.118l1.248 3.84c.3.921-.755 1.688-1.538 1.118l-3.262-2.375a1 1 0 00-1.176 0l-3.262 2.375c-.783.57-1.838-.197-1.538-1.118l1.248-3.84a1 1 0 00-.364-1.118L2.06 9.267c-.778-.552-.382-1.81.588-1.81h4.04a1 1 0 00.95-.69l1.249-3.84z"></path></svg>
+                </h3>
+                <p class="text-sm text-gray-300 mb-4">Unlock premium analytics, priority support, and community upgrades.</p>
+                <button class="w-full bg-yellow-400 text-gray-900 font-bold py-2 rounded-lg hover:bg-yellow-500 transition">Upgrade Now</button>
+            </div>
+
+            <!-- Product Marketplace (10, 2, 3, 4) -->
+            <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                <h4 class="font-subheading text-xl mb-3 text-gray-800">Shop Siply</h4>
+                <div class="flex space-x-4 overflow-x-auto pb-2">
+                    
+                    <!-- Product 1: Sub-Zero Bundle (CORRECTED FILENAME & PATH) -->
+                    <a href="https://siplyca.wixsite.com/siplyve/category/all-products" target="_blank" class="flex-shrink-0 w-40 text-center hover:opacity-80 transition duration-150">
+                        <img src="./files/product mockups website (7).png" class="rounded-lg mb-1 mx-auto object-cover h-40 w-40" alt="Sub-Zero Bundle">
+                        <p class="text-sm font-subheading mt-2">Sub-Zero Bundle</p>
+                        <p class="text-sm font-bold text-gray-800">$599.99</p>
+                    </a>
+                    
+                    <!-- Product 2: Snowflake Bundle (CORRECTED FILENAME & PATH) -->
+                    <a href="https://siplyca.wixsite.com/siplyve/category/all-products" target="_blank" class="flex-shrink-0 w-40 text-center hover:opacity-80 transition duration-150">
+                        <img src="./files/product mockups website (8).png" class="rounded-lg mb-1 mx-auto object-cover h-40 w-40" alt="Snowflake Bundle">
+                        <p class="text-sm font-subheading mt-2">Snowflake Bundle</p>
+                        <p class="text-sm font-bold text-gray-800">$359.99</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Bottom Navigation Bar (9) -->
+        <nav class="sticky bottom-0 w-full bg-white border-t border-gray-100 p-2 flex justify-around shadow-2xl">
+            <button id="nav-dashboard" class="nav-item flex flex-col items-center text-[var(--color-primary)] transition duration-150">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+                <span class="text-xs mt-1 font-semibold">Dashboard</span>
+            </button>
+            <button id="nav-analytics" class="nav-item flex flex-col items-center text-gray-400 hover:text-gray-700 transition duration-150">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <span class="text-xs mt-1">Analytics</span>
+            </button>
+            <button id="nav-community" class="nav-item flex flex-col items-center text-gray-400 hover:text-gray-700 transition duration-150">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20v-2c0-.656-.126-1.283-.356-1.857M9 20H4v-2a3 3 0 015-2.236M9 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.276 0M9 17h6M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <span class="text-xs mt-1">Community (8)</span>
+            </button>
+            <button id="nav-shop" class="nav-item flex flex-col items-center text-gray-400 hover:text-gray-700 transition duration-150">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                <span class="text-xs mt-1">Shop (10)</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- Simple JavaScript for dynamic progress and view switching -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const progressCircle = document.getElementById('hydration-progress');
+            const progressText = document.getElementById('hydration-percent');
+            
+            // View Elements
+            const dashboardView = document.getElementById('dashboard-view');
+            const analyticsView = document.getElementById('analytics-view');
+            const communityView = document.getElementById('community-view');
+            const shopView = document.getElementById('shop-view');
+            
+            // Nav Elements
+            const navDashboard = document.getElementById('nav-dashboard');
+            const navAnalytics = document.getElementById('nav-analytics');
+            const navCommunity = document.getElementById('nav-community');
+            const navShop = document.getElementById('nav-shop');
+
+            const radius = 45;
+            const circumference = 2 * Math.PI * radius;
+            
+            // Set the full circumference for the stroke-dasharray
+            progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+            
+            // Function to set hydration progress
+            function setProgress(percent) {
+                const offset = circumference - (percent / 100) * circumference;
+                progressCircle.style.strokeDashoffset = offset;
+                progressText.textContent = `${percent}%`;
+            }
+
+            // Simulate a slight progress update
+            setTimeout(() => {
+                setProgress(68); // Progresses slightly to 68%
+            }, 1000);
+
+            // Function to handle view switching
+            function switchView(viewName) {
+                // Reset colors on all navigation items
+                document.querySelectorAll('.nav-item').forEach(btn => {
+                    btn.classList.remove('text-[var(--color-primary)]');
+                    btn.classList.add('text-gray-400');
+                    // Reset font weight
+                    btn.querySelector('span').classList.remove('font-semibold');
+                });
+
+                // Hide all views
+                dashboardView.classList.add('hidden');
+                analyticsView.classList.add('hidden');
+                communityView.classList.add('hidden');
+                shopView.classList.add('hidden');
+
+                let activeNavButton;
+                let activeView;
+
+                if (viewName === 'analytics') {
+                    activeView = analyticsView;
+                    activeNavButton = navAnalytics;
+                } else if (viewName === 'community') {
+                    activeView = communityView;
+                    activeNavButton = navCommunity;
+                } else if (viewName === 'shop') {
+                    activeView = shopView;
+                    activeNavButton = navShop;
+                } else {
+                    activeView = dashboardView;
+                    activeNavButton = navDashboard;
+                }
+
+                // Show active view and set active style for button
+                activeView.classList.remove('hidden');
+                activeNavButton.classList.add('text-[var(--color-primary)]');
+                activeNavButton.classList.remove('text-gray-400');
+                activeNavButton.querySelector('span').classList.add('font-semibold');
+            }
+
+            // Event Listeners for navigation buttons
+            navDashboard.addEventListener('click', () => switchView('dashboard'));
+            navAnalytics.addEventListener('click', () => switchView('analytics'));
+            navCommunity.addEventListener('click', () => switchView('community'));
+            navShop.addEventListener('click', () => switchView('shop'));
+
+            // Initialize to dashboard view on load
+            switchView('dashboard');
+        });
+    </script>
+</body>
+</html>
